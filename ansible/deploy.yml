@@ -1,0 +1,6 @@
+---
+- hosts:
+    - miner
+  roles:
+    - server
+    - ccminer

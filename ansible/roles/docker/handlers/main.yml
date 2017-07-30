@@ -1,0 +1,4 @@
+---
+- name: Docker Prune
+  become: yes
+  command: "docker system prune -f"

@@ -1,0 +1,3 @@
+---
+docker_apt_keyserver: "p80.pool.sks-keyservers.net"
+docker_apt_key_id: "58118E89F3A912897C070ADBF76221572C52609D"

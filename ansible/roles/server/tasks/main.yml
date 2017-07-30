@@ -1,0 +1,8 @@
+---
+- name: Install base server apt requirments
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items: "{{ server_apt_dependencies }}"

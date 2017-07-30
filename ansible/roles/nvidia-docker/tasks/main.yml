@@ -1,0 +1,41 @@
+---
+- name: "Install NVIDIA drivers [1/3]: Add apt key"
+  become: yes
+  apt_key:
+    url: "{{ nvidia_docker_nvidia_deb_repo }}/{{ nvidia_docker_deb_id }}.pub"
+    state: present
+
+- name: "Install NVIDIA drivers [2/3]: Add nvidia to apt sources"
+  become: yes
+  command: "sh -c 'echo \"deb {{ nvidia_docker_nvidia_deb_repo }} /\" > /etc/apt/sources.list.d/cuda.list'"
+
+- name: "Install NVIDIA drivers [3/3]: Install apt requirements"
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+    install_recommends: no
+  with_items:
+    - linux-headers-generic
+    - dkms
+    - cuda-drivers
+
+- name: Check if nvidia-docker is installed
+  command: "dpkg-query -W nvidia-docker"
+  register: nvidia_docker_installed
+  failed_when: nvidia_docker_installed.rc > 1
+  changed_when: nvidia_docker_installed.rc == 1
+
+- block:
+    - name: Download nvidia-docker deb
+      get_url:
+        url: "{{ nvidia_docker_deb_url }}"
+        dest: "/tmp/nvidia-docker.deb"
+
+    - name: Install nvidia-docker
+      become: yes
+      apt:
+        deb: "/tmp/nvidia-docker.deb"
+
+  when: nvidia_docker_installed.rc == 1

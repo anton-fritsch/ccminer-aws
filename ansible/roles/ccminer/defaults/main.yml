@@ -1,0 +1,14 @@
+---
+ccminer_repository_base_url: "afritsch"
+ccminer_repository_image_name: "ccminer"
+ccminer_image_version: "latest"
+
+ccminer_host_api_port: 4068
+ccminer_container_api_port: 4068
+ccminer_host_config_dir: "/etc/ccminer/conf.d"
+ccminer_container_config_dir: "/etc/ccminer/conf.d"
+
+ccminer_algorithm: "keccak"
+ccminer_mining_url: "stratum+tcp://keccak.usa.nicehash.com:3338"
+ccminer_cpu_priority: 3
+ccminer_intensity: 0 # auto

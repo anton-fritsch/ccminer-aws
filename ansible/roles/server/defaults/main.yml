@@ -1,0 +1,4 @@
+---
+server_apt_dependencies:
+  - python
+  - python-pip

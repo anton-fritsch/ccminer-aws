@@ -1,0 +1,52 @@
+---
+- name: Accept docker apt key
+  become: yes
+  apt_key:
+    keyserver: "{{ docker_apt_keyserver }}"
+    id: "{{ docker_apt_key_id }}"
+    state: present
+
+- name: Add docker apt repos
+  become: yes
+  apt_repository:
+    repo: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - "deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_lsb.codename }} main"
+
+- name: Install docker apt packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    #- "linux-image-extra-{{ ansible_kernel }}"
+    - linux-image-extra-virtual
+    - apt-transport-https
+    - ca-certificates
+    - docker-engine
+
+- name: Create a docker group to permit non-root use
+  become: yes
+  group:
+    name: docker
+    state: present
+
+- name: Start the docker daemon
+  become: yes
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Install docker tools
+  become: yes
+  pip:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - docker
+    - docker-py
+    - docker-compose

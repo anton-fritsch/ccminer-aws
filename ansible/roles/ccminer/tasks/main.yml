@@ -1,0 +1,43 @@
+---
+- name: Ensure ccminer config directory exists
+  become: yes
+  file:
+    dest: "{{ ccminer_host_config_dir }}"
+    state: directory
+    group: docker
+
+- name: Create ccminer config
+  become: yes
+  template:
+    src: "ccminer.conf"
+    dest: "{{ ccminer_host_config_dir }}/ccminer.conf"
+    group: docker
+
+- name: Pull ccminer image from repository
+  become: yes
+  docker_image:
+    name: "{{ ccminer_repository_base_url }}/{{ ccminer_repository_image_name }}"
+    tag: "{{ ccminer_image_version }}"
+    force: yes
+
+- name: Remove existing ccminer container
+  become: yes
+  docker_container:
+    name: "ccminer"
+    state: absent
+
+- name: Stop existing ccminer container
+  become: yes
+  docker_container:
+    name: "ccminer"
+    state: absent
+
+- name: Create docker containers
+  become: yes
+  command: "nvidia-docker run -d
+    -p {{ ccminer_host_api_port }}:{{ ccminer_container_api_port }}
+    -v {{ ccminer_host_config_dir }}:{{ ccminer_container_config_dir }}
+    --name ccminer
+    {{ ccminer_repository_base_url }}/{{ ccminer_repository_image_name }}:{{ ccminer_image_version }}"
+  notify:
+    - Docker Prune
